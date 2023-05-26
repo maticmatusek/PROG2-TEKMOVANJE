@@ -9,10 +9,24 @@ public class Kloniraj {
 
 	@SuppressWarnings("removal")
 	public static Igra kloniraj(Igra igra1) {
+			int dimenzija_igre = new Integer(igra1.dimenzija_igre);
 			Igra igra2 = new Igra();
 			  String vrsta_igre2 = new String(igra1.vrsta_igre);
 			  int dimenzija_igre2 = new Integer(igra1.dimenzija_igre);
-			  Map<String,Tocka> mozna_polja2 = new HashMap<String,Tocka>(igra1.mozna_polja);
+			  Map<String,Tocka> mozna_polja2 = new HashMap<String,Tocka>();
+			  
+			  Set<Tocka> pomozna = new HashSet<Tocka>();
+			  for (Tocka t: igra1.mozna_polja.values()) {
+				  int x = new Integer(t.x);
+				  int y = new Integer(t.y);
+				  String ime = new String(t.ime);
+				  Tocka u = new Tocka(ime,x,y);
+				  u.sosedi = new HashMap<String,String>(t.sosedi);
+				  mozna_polja2.put(u.ime, u);
+			  }
+			  
+			  
+			  
 			  Set<HashSet<Tocka>> skupine_beli2 = new HashSet<HashSet<Tocka>>(igra1.skupine_beli);
 			  Set<HashSet<Tocka>> skupine_crni2 = new HashSet<HashSet<Tocka>>(igra1.skupine_crni);
 			  Set<Tocka> bele_tocke2 = new HashSet<Tocka>(igra1.bele_tocke);

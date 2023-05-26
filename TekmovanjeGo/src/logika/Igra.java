@@ -1,5 +1,6 @@
 package logika;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,8 +10,9 @@ import java.util.Random;
 import java.util.Set;
 
 import inteligenca.Inteligenca;
+import splosno.Poteza;
 
-public class Igra {
+public class Igra implements Cloneable{
 
 	public String vrsta_igre;
 	public  int dimenzija_igre;
@@ -29,7 +31,7 @@ public class Igra {
 			public Igra() {
 				this.racunalnik2 = false;
 				this.dimenzija_igre = 9;
-				this.vrsta_igre = "ČČ";
+				this.vrsta_igre = "ČR";
 				this.racunalnik = null;
 				igra_clovek = true;
 				mozna_polja = new HashMap<String,Tocka>();
@@ -69,10 +71,36 @@ public class Igra {
 				}
 			}
 			
-			 boolean odigraj(Poteza poteza) {
-				 if (mozna_polja.get("("+poteza.x+", "+poteza.y+")").zasedenost == null) {
-					 mozna_polja.get("("+poteza.x+", "+poteza.y+")").zasedenost = igralec_na_vrsti;
-					 return true;}
+			 public boolean odigraj(Poteza poteza) {
+				 if (mozna_polja.get("("+(poteza.x() + 1 )+", "+(poteza.y()+1)+")").zasedenost == null) {
+					 int x = poteza.x() +1 ;
+					 int y = poteza.y() +1 ;
+					 Tocka t = mozna_polja.get("("+x+", "+y+")");
+					 String barva = igralec_na_vrsti;
+					 t.zasedenost = igralec_na_vrsti;
+						if (x!=1) {
+							Tocka u = mozna_polja.get("("+(x-1)+", "+y+")");
+							u.sosedi.put("Desno", barva);
+							if (u.zasedenost != null) t.sosedi.put("Levo", u.zasedenost);
+						}
+						if (x!=dimenzija_igre) {
+							Tocka u = mozna_polja.get("("+(x+1)+", "+y+")");
+							u.sosedi.put("Levo", barva);
+							if (u.zasedenost != null) t.sosedi.put("Desno", u.zasedenost);
+						}
+						if (y!=1) {
+							Tocka u =mozna_polja.get("("+x+", "+(y-1)+")");
+							u.sosedi.put("Dol", barva);
+							if (u.zasedenost != null) t.sosedi.put("Gor", u.zasedenost);
+						}
+						if (y!=dimenzija_igre) {
+							Tocka u = mozna_polja.get("("+x+", "+(y+1)+")");
+							u.sosedi.put("Gor", barva);
+							if (u.zasedenost != null) t.sosedi.put("Dol", u.zasedenost);
+						}
+					 
+					 return true;
+					 }
 				else return false;
 			 }
 			 	
@@ -212,35 +240,62 @@ public class Igra {
 				return randomElem;
 			}
 			
-//			public void dodaj_figuro(int x, int y, String barva) {
-//				Tocka t = mozna_polja.get("("+x+", "+y+")");
-//				t.zasedenost = barva;
-//				if (x!=1) {
-//					Tocka u = mozna_polja.get("("+(x-1)+", "+y+")");
-//					u.sosedi.put("Desno", barva);
-//					if (u.zasedenost != null) t.sosedi.put("Levo", u.zasedenost);
-//				}
-//				if (x!=dimenzija_igre) {
-//					Tocka u = mozna_polja.get("("+(x+1)+", "+y+")");
-//					u.sosedi.put("Levo", barva);
-//					if (u.zasedenost != null) t.sosedi.put("Desno", u.zasedenost);
-//				}
-//				if (y!=1) {
-//					Tocka u = mozna_polja.get("("+x+", "+(y-1)+")");
-//					u.sosedi.put("Dol", barva);
-//					if (u.zasedenost != null) t.sosedi.put("Gor", u.zasedenost);
-//				}
-//				if (y!=dimenzija_igre) {
-//					Tocka u = mozna_polja.get("("+x+", "+(y+1)+")");
-//					u.sosedi.put("Gor", barva);
-//					if (u.zasedenost != null) t.sosedi.put("Dol", u.zasedenost);
-//				}
-//				if (igralec_na_vrsti == "Beli") igralec_na_vrsti = "Crni";
-//				else igralec_na_vrsti = "Beli";
-//				preveri_igro();
-//				if (racunalnik == igralec_na_vrsti) {
-//					Poteza poteza = Inteligenca.izberiPotezo();
-//				}
-//			}
+
+			
+			@Override
+		    public Igra clone() {
+		        Igra cloned = new Igra();
+		        cloned.vrsta_igre = this.vrsta_igre;
+		        cloned.dimenzija_igre = this.dimenzija_igre;
+		        cloned.mozna_polja = new HashMap<>(this.mozna_polja);
+		        cloned.skupine_beli = new HashSet<>(this.skupine_beli);
+		        cloned.skupine_crni = new HashSet<>(this.skupine_crni);
+		        cloned.bele_tocke = new HashSet<>(this.bele_tocke);
+		        cloned.crne_tocke = new HashSet<>(this.crne_tocke);
+		        cloned.igralec_na_vrsti = this.igralec_na_vrsti;
+		        cloned.igramo = this.igramo;
+		        cloned.racunalnik = this.racunalnik;
+		        cloned.racunalnik2 = this.racunalnik2;
+		        cloned.igra_clovek = this.igra_clovek;
+		        return cloned;
+		    }
+			
+
+			
+			public Set<Poteza> prosta_polja_okoli_skupine(String barva) {
+				Set<Poteza>okoli_skupin = new HashSet<>();
+				preveri_skupine();
+				Set<HashSet<Tocka>> skupine = new HashSet<HashSet<Tocka>>();
+				if (barva.equals("Beli")) skupine = skupine_beli;
+				else skupine = skupine_crni;
+				for (Set<Tocka> s:skupine) {
+					for (Tocka t:s) {
+						if (t.sosedi.get("Levo").equals("Prosto")) {
+							okoli_skupin.add(new Poteza(t.x-2,t.y-1));
+						}
+						if (t.sosedi.get("Desno").equals("Prosto")) {
+							okoli_skupin.add(new Poteza(t.x,t.y-1));
+						}
+						if (t.sosedi.get("Gor").equals("Prosto")) {
+							okoli_skupin.add(new Poteza(t.x-1,t.y-2));
+						}
+						if (t.sosedi.get("Dol").equals("Prosto")) {
+							okoli_skupin.add(new Poteza(t.x-1,t.y));
+						}
+					}
+				}
+				return okoli_skupin;
+			}
+			
+			public Set<Poteza> dodaj_poteze(Poteza poteza){
+				Set<Poteza>izhod = new HashSet<>();
+				int x = poteza.x()+1;
+				int y = poteza.y()+1;
+				if (x+1 <= dimenzija_igre && x+1>=1 &&mozna_polja.get("("+(x+1)+", "+y+")").equals("Prazno") ) izhod.add(new Poteza(x,y-1));
+				if (x-1 <= dimenzija_igre && x-1>=1 &&mozna_polja.get("("+(x-1)+", "+y+")").equals("Prazno") ) izhod.add(new Poteza(x-2,y-1));
+				if (y+1 <= dimenzija_igre && y+1>=1 &&mozna_polja.get("("+x+", "+(y+1)+")").equals("Prazno") ) izhod.add(new Poteza(x-1,y));
+				if (y-1 <= dimenzija_igre && y-1>=1 &&mozna_polja.get("("+x+", "+(y-1)+")").equals("Prazno") ) izhod.add(new Poteza(x-1,y-2));
+				return izhod;
+			}
 			
 		}

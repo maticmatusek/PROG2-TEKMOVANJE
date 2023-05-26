@@ -2,8 +2,10 @@ package GUI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -130,6 +132,16 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			
 		}
 		}
+		g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) )); 
+		g.setColor(Color.CYAN);
+		if (igra.preveri_igro().equals("ZMAGA BELI")) {
+
+			 g2.drawString("Zmaga beli!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+		}
+		else if (igra.preveri_igro().equals("ZMAGA CRNI")) {
+
+			 g2.drawString("Zmaga črni!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+		}
 		revalidate();
 	    repaint();
 	}
@@ -187,14 +199,20 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 					koordinata_y = i+1;
 				}
 			}
+			repaint();
 			if (koordinata_x >=1 && koordinata_x <= dimenzija_igre && koordinata_y >=1 && koordinata_y <= dimenzija_igre) {
 				if (igra.mozna_polja.get("("+koordinata_x+", "+koordinata_y+")").zasedenost == null) {
+					igra.mozna_polja.get("("+koordinata_x+", "+koordinata_y+")").zasedenost = "Beli";
+					repaint();
+					igra.mozna_polja.get("("+koordinata_x+", "+koordinata_y+")").zasedenost = null;
 					Vodja vodja = new Vodja();
 					vodja.dodaj_figuro(koordinata_x,koordinata_y,igra);
 				}
 			}
 			repaint();
 		}
+		repaint();
+
 	}
 
 
@@ -237,6 +255,19 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void refreshScreen() {
+	    Timer timer = new Timer(0, new ActionListener() {
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        repaint();
+	      }
+	    });
+	    timer.setRepeats(true);
+	    // Aprox. 60 FPS
+	    timer.setDelay(17);
+	    timer.start();
+	  }
 	
 
 }

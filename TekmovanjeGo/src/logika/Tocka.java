@@ -15,7 +15,7 @@ public class Tocka {
 	public	 int yy;
 	
 
-	protected String ime;
+	public String ime;
 	
 	public String zasedenost; // Kdo je zasedel mesto
 	

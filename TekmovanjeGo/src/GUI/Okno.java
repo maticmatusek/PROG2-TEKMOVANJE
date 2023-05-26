@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 
 import inteligenca.Inteligenca;
 import logika.Igra;
-import logika.Poteza;
+import splosno.Poteza;
 import logika.Vodja;
 
 @SuppressWarnings("serial")
@@ -73,22 +73,26 @@ public class Okno extends JFrame implements ActionListener{
 					if (mm.getText().matches("RČ")) {
 						igra.racunalnik = "Crni";
 						igra.igra_clovek = false;
+						igra.vrsta_igre = "RČ";
 					}
 					if (mm.getText().matches("ČR")) igra.racunalnik = "Beli";
 					platno.nastaviIgro(igra);
 					if (mm.getText().matches("RČ")) {
-						Inteligenca inteligenca = new Inteligenca("Matic");
-						Poteza poteza = inteligenca.izberiPotezo(igra);
+						
+					//	Inteligenca inteligenca = new Inteligenca("Matic");
+					//	Poteza poteza = inteligenca.izberiPotezo(igra);
 						Vodja vodja = new Vodja();
-						vodja.dodaj_figuro(poteza.x, poteza.y, igra);
+						vodja.dodaj_figuro(0,0, igra);
 					}
 					if (mm.getText().matches("RR")) {
+						igra.vrsta_igre = "RR";
+						igra.racunalnik = "lala";
 						igra.racunalnik2 = true;
 						igra.igra_clovek = false;
 						Inteligenca inteligenca = new Inteligenca("Matic");
 						Poteza poteza = inteligenca.izberiPotezo(igra);
 						Vodja vodja = new Vodja();
-						vodja.dodaj_figuro(poteza.x, poteza.y, igra);
+						vodja.dodaj_figuro(poteza.x()+1, poteza.y()+1, igra);
 					}
 				}
 				else {JOptionPane.showMessageDialog(null, "Premajhna igralna plošča!", "ERROR", JOptionPane.WARNING_MESSAGE);}

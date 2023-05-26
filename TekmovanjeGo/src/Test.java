@@ -1,6 +1,7 @@
 import GUI.Okno;
 import logika.Igra;
 import logika.Kloniraj;
+import logika.Tocka;
 
 public class Test {
 	
@@ -74,11 +75,7 @@ public class Test {
 		okno.setVisible(true);
 		
 		okno.platno.nastaviIgro(igra);
-		
-		Igra igra2 = Kloniraj.kloniraj(igra);
-		
-		System.out.println( igra2.mozna_polja.equals(igra.mozna_polja));
-		
+
 //		for (int i = 1; i<=igra.dimenzija_igre;i++) {
 //			for (int j = 1; j<=igra.dimenzija_igre;j++) {
 //			      System.out.println("key: " + igra.mozna_polja.get("("+i+", "+j+")") + " value: " + igra.mozna_polja.get("("+i+", "+j+")").sosedi);	
