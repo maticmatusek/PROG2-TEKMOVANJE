@@ -227,7 +227,7 @@ public class Inteligenca extends splosno.KdoIgra{
         }
 
         // Perform Monte Carlo simulations
-        int simulations = 400;
+        int simulations = 800;
         Map<Poteza, Integer> moveWins = new HashMap<>();
         for (Poteza move : possibleMoves) {
             int wins = 0;

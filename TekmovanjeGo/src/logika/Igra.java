@@ -98,7 +98,6 @@ public class Igra implements Cloneable{
 							u.sosedi.put("Gor", barva);
 							if (u.zasedenost != null) t.sosedi.put("Dol", u.zasedenost);
 						}
-					 
 					 return true;
 					 }
 				else return false;
