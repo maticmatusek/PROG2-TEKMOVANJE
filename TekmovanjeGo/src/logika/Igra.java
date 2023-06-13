@@ -14,24 +14,37 @@ import splosno.Poteza;
 
 public class Igra implements Cloneable{
 
+	public int iteracije;
+	public String zmaga;
 	public String vrsta_igre;
 	public  int dimenzija_igre;
 	public  Map<String,Tocka> mozna_polja;
 	public Set<HashSet<Tocka>> skupine_beli ; 
 	public Set<HashSet<Tocka>> skupine_crni ;
+	public Set<HashSet<Tocka>> skupine_prazni ;
 	public Set<Tocka> bele_tocke;
 	public Set<Tocka> crne_tocke;
+	public Set<Tocka> prazne_tocke;
 	public String igralec_na_vrsti;
 	public Boolean igramo;
 	public String racunalnik;
 	public Boolean racunalnik2;
 	public Boolean igra_clovek;
+	public String pravila_igre;
+	public int score_beli;
+	public int score_crni;
+	public int stevilo_preskokov;
 
 			
 			public Igra() {
+				this.stevilo_preskokov = 0;
+				this.iteracije = 10;
+				this.score_beli = 0;
+				this.score_crni = 0;
+				this.pravila_igre= "GO";
 				this.racunalnik2 = false;
-				this.dimenzija_igre = 9;
-				this.vrsta_igre = "ČR";
+				this.dimenzija_igre = 19;
+				this.vrsta_igre = "ČČ";
 				this.racunalnik = null;
 				igra_clovek = true;
 				mozna_polja = new HashMap<String,Tocka>();
@@ -53,10 +66,12 @@ public class Igra implements Cloneable{
 				bele_tocke = new HashSet<Tocka>();
 				igralec_na_vrsti = "Crni";
 				igramo = true;
+				zmaga = "";
 			}
 			
 			public void nastavi_dimenzijo(int dimenzija) {
 				this.dimenzija_igre = dimenzija;
+				mozna_polja = new HashMap<String,Tocka>();
 				for (int i = 1; i<=dimenzija_igre;i++) {
 					for (int j = 1; j<=dimenzija_igre;j++) {
 						mozna_polja.put("("+i+", "+j+")",new Tocka( "("+i+", "+j+")",i,j));
@@ -108,12 +123,20 @@ public class Igra implements Cloneable{
 			public void preveri_skupine(){
 				skupine_beli = new HashSet<HashSet<Tocka>> ();
 				skupine_crni = new HashSet<HashSet<Tocka>> ();
+				prazne_tocke = new HashSet<Tocka>();
+				skupine_prazni = new HashSet<HashSet<Tocka>> ();
 				crne_tocke = new HashSet<Tocka>();
 				bele_tocke = new HashSet<Tocka>();
 				for (Tocka t : mozna_polja.values()) {
 					if (t.zasedenost == "Beli") bele_tocke.add(t);
 					else if (t.zasedenost == "Crni") crne_tocke.add(t);
+					else if (t.zasedenost == null) prazne_tocke.add(t);
 				}
+				
+				
+				
+				
+				
 				
 				// BELE TOČKE
 				
@@ -198,6 +221,50 @@ public class Igra implements Cloneable{
 								if (neka_mnozica.size()!=0) skupine_crni.add(neka_mnozica);
 							}
 						}
+						
+						// PRAZNE TOČKE
+						
+						neka_mnozica = new HashSet<Tocka>();
+						zbiralna_mnozica = new HashSet<Tocka>();
+						
+						while (prazne_tocke.size()!=0 || zbiralna_mnozica.size()!=0) {
+							Tocka t = null;
+							if (zbiralna_mnozica.size()==0) {
+								if (neka_mnozica.size()!=0) skupine_prazni.add(neka_mnozica);
+								
+								neka_mnozica = new HashSet<Tocka>();
+								t = randomTockaFromSet(prazne_tocke);
+							}
+							else {
+								t = randomTockaFromSet(zbiralna_mnozica);
+							}
+							prazne_tocke.remove(t);
+							zbiralna_mnozica.remove(t);
+							neka_mnozica.add(t);
+							if (t.sosedi.get("Levo") != "Crni" && t.sosedi.get("Levo") != "Beli" ) {
+								Tocka u = mozna_polja.get("("+(t.x-1)+", "+t.y+")");
+								if (prazne_tocke.contains(u)) zbiralna_mnozica.add(u);
+								
+							}
+							if (t.sosedi.get("Desno") != "Crni" && t.sosedi.get("Desno") != "Beli" ) {
+								Tocka u = mozna_polja.get("("+(t.x+1)+", "+t.y+")");
+								if (prazne_tocke.contains(u)) zbiralna_mnozica.add(u);	
+							}
+							if (t.sosedi.get("Gor") != "Crni" && t.sosedi.get("Levo") != "Gor" ) {
+								Tocka u = mozna_polja.get("("+t.x+", "+(t.y-1)+")");
+								
+								if (prazne_tocke.contains(u)) zbiralna_mnozica.add(u);
+							}
+							if (t.sosedi.get("Dol") != "Crni" && t.sosedi.get("Dol") != "Beli" ) {
+								Tocka u = mozna_polja.get("("+t.x+", "+(t.y+1)+")");
+								if (prazne_tocke.contains(u)) zbiralna_mnozica.add(u);
+							}
+							if (zbiralna_mnozica.size()==0) {
+								if (neka_mnozica.size()!=0) skupine_prazni.add(neka_mnozica);
+							}
+						}
+						
+						
 			}
 			
 			public String preveri_igro() {
@@ -298,4 +365,67 @@ public class Igra implements Cloneable{
 				return izhod;
 			}
 			
+			public void preveri_igro_go() {
+				igramo = false;
+				preveri_skupine();
+				
+				for (HashSet<Tocka> skupina : skupine_prazni) {
+					HashSet<String> preverjanje = new HashSet<String>();
+					for (Tocka t : skupina) {
+						preverjanje.add(t.sosedi.get("Levo"));
+						preverjanje.add(t.sosedi.get("Desno"));
+						preverjanje.add(t.sosedi.get("Gor"));
+						preverjanje.add(t.sosedi.get("Dol"));
+					}
+					if (!preverjanje.contains("Beli") && preverjanje.contains("Crni")) {score_crni = score_crni + skupina.size();}
+					else if (!preverjanje.contains("Crni") && preverjanje.contains("Beli")) {score_beli = score_beli + skupina.size();};
+				}
+				
+				
+				if (score_beli > score_crni) {
+					zmaga = "Beli";
+			
+				}
+				else if (score_beli < score_crni) zmaga = "Crni";
+				else zmaga = "IZENAČENO";
+			}
+			
+			public void izbrisi_skupino(HashSet<Tocka> skupina) {
+				for (Tocka t : skupina) {
+					t.zasedenost = null;
+					if (t.x+1 <= dimenzija_igre && mozna_polja.get("("+(t.x+1)+", "+t.y+")").sosedi.get("Levo")!="Nemore") mozna_polja.get("("+(t.x+1)+", "+t.y+")").sosedi.replace("Levo","Prosto");
+					if (t.x-1 >= 1 && mozna_polja.get("("+(t.x-1)+", "+t.y+")").sosedi.get("Desno")!="Nemore") mozna_polja.get("("+(t.x-1)+", "+t.y+")").sosedi.replace("Desno","Prosto");
+					if (t.y+1 <= dimenzija_igre && mozna_polja.get("("+t.x+", "+(t.y+1)+")").sosedi.get("Gor")!="Nemore") mozna_polja.get("("+t.x+", "+(t.y+1)+")").sosedi.replace("Gor","Prosto");
+					if (t.y-1 >= 1 && mozna_polja.get("("+t.x+", "+(t.y-1)+")").sosedi.get("Dol")!="Nemore") mozna_polja.get("("+t.x+", "+(t.y-1)+")").sosedi.replace("Dol","Prosto");
+				}
+			}
+		
+			public Set<HashSet<Tocka>> najdi_skupine_za_zbrisat(String barva){
+				preveri_skupine();
+				String zasedenost = null;
+				Set<HashSet<Tocka>> skupine = new HashSet<HashSet<Tocka>>();
+				Set<HashSet<Tocka>> skupine_barve = new HashSet<HashSet<Tocka>>();
+				if (barva.equals("Beli")) {
+					skupine_barve = skupine_beli;
+					zasedenost = "Crni";
+				}
+				else {
+					skupine_barve = skupine_crni;
+					zasedenost = "Beli";
+				}
+				for (HashSet<Tocka> skupina : skupine_barve ) {
+					HashSet<String> preverjanje = new HashSet<String>();
+					for (Tocka t : skupina) {
+						preverjanje.add(t.sosedi.get("Levo"));
+						preverjanje.add(t.sosedi.get("Desno"));
+						preverjanje.add(t.sosedi.get("Gor"));
+						preverjanje.add(t.sosedi.get("Dol"));
+					}
+					if (preverjanje.contains(zasedenost) && !preverjanje.contains("Prosto")) {
+						skupine.add(skupina);
+					}
+				}
+				return skupine;
+			}
 		}
+

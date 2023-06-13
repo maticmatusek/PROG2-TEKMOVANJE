@@ -48,6 +48,7 @@ public class Kloniraj {
 		 	  igra2.racunalnik = racunalnik2;
 		 	  igra2.racunalnik2 = racunalnik22;
 		 	  igra2.igra_clovek = igra_clovek2;
+		 	  igra2.pravila_igre = new String(igra1.pravila_igre);
 		 	  
 		 	  
 			return igra2;

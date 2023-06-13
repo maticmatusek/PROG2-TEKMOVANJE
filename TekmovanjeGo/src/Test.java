@@ -7,7 +7,6 @@ public class Test {
 	
 	public static void main(String[] args) {
 		Igra igra = new Igra();
-		igra.racunalnik = "Beli";
 //		igra.dodaj_figuro(1, 1, "Beli");
 //		igra.dodaj_figuro(1, 3, "Beli");
 //		igra.dodaj_figuro(2,2 , "Beli");

@@ -132,17 +132,39 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			
 		}
 		}
-		g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) )); 
+		 
 		g.setColor(Color.CYAN);
-		if (igra.preveri_igro().equals("ZMAGA BELI")) {
-
+		if (igra.preveri_igro().equals("ZMAGA BELI")||igra.zmaga.equals("Beli")) {
+			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
 			 g2.drawString("Zmaga beli!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+			 if (igra.pravila_igre.equals("GO")) {
+				 g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/25) ));
+				 g2.drawString("Točke črni: " + igra.score_crni + "            " + "Točke beli: " + igra.score_beli, round(velikost_okna/5), round(odmik_od_strani*15));
+			 }
 		}
-		else if (igra.preveri_igro().equals("ZMAGA CRNI")) {
-
+		else if (igra.preveri_igro().equals("ZMAGA CRNI") || igra.zmaga.equals("Crni")) {
+			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
 			 g2.drawString("Zmaga črni!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+			 if (igra.pravila_igre.equals("GO")) {
+				 g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/25) ));
+				 g2.drawString("Točke črni: " + igra.score_crni + "            " + "Točke beli: " + igra.score_beli, round(velikost_okna/5), round(odmik_od_strani*14.9));
+			 }
 		}
-		revalidate();
+		else if (igra.zmaga.equals("IZENAČENO")) {
+			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
+			g2.drawString("Izenačeno", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+		}
+		
+	    if (igra.pravila_igre.equals("GO")) {
+	    	g.setFont(new Font("TimesRoman", Font.PLAIN, (int)(odmik_od_strani*5/11) ));
+	 
+	    	g2.setColor(Color.GRAY );
+	    	g2.drawRect( (int) (odmik_od_strani/10) , (int) (odmik_od_strani/10), (int)(2.4 *odmik_od_strani), (int)(odmik_od_strani*5/10));
+	    	g2.drawString("PRESKOČI", (int) (odmik_od_strani/9) , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 ));
+	    	g2.drawRect( (int) (velikost_okna - 2*odmik_od_strani - odmik_od_strani*2.8/10) , (int) (odmik_od_strani/10), (int)(2.2*odmik_od_strani), (int)(odmik_od_strani*5/10));
+	    	g2.drawString("PREDAJA", (int) (velikost_okna - 1.9*odmik_od_strani - odmik_od_strani*2.8/10)  , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 ));
+	    }
+	    revalidate();
 	    repaint();
 	}
 	
@@ -209,10 +231,29 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 					vodja.dodaj_figuro(koordinata_x,koordinata_y,igra);
 				}
 			}
+			if ( igra.pravila_igre.equals("GO") && x >= odmik_od_strani/10 && x<= odmik_od_strani/10 + 2.4 *odmik_od_strani &&
+					y >= odmik_od_strani/10 &&  y <= odmik_od_strani/10 + odmik_od_strani*5/10) {
+				System.out.println(igra.vrsta_igre);
+				igra.stevilo_preskokov = igra.stevilo_preskokov + 1;
+				if (igra.stevilo_preskokov>=2) igra.preveri_igro_go();
+				if (igra.igralec_na_vrsti.equals("Crni")) igra.igralec_na_vrsti = "Beli";
+				else igra.igralec_na_vrsti = "Crni";
+				if ((igra.vrsta_igre.equals("RČ") || igra.vrsta_igre.equals("ČR")) && igra.igra_clovek == true ) {
+					igra.igra_clovek = false;
+					Vodja vodja = new Vodja();
+					vodja.dodaj_figuro(1, 1, igra);
+				}
+
+			}
+			if ( igra.pravila_igre.equals("GO") && x >= velikost_okna - 2*odmik_od_strani - odmik_od_strani*2.8/10 && x<= velikost_okna - 2*odmik_od_strani - odmik_od_strani*2.8/10 + 2.2*odmik_od_strani &&
+					y >= odmik_od_strani/10 &&  y <= odmik_od_strani/10 + odmik_od_strani*5/10) {
+				igra.igramo = false;
+				if (igra.igralec_na_vrsti.equals("Crni")) igra.zmaga = "Beli";
+				else igra.zmaga = "Crni";
+			}	
 			repaint();
 		}
 		repaint();
-
 	}
 
 

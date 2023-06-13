@@ -41,6 +41,7 @@ public class Inteligenca extends splosno.KdoIgra{
 		igra.preveri_skupine();
 		String igram_barvo = igra.igralec_na_vrsti;
 		if (igra.skupine_beli.size() == 0 && igra.skupine_crni.size() == 0) {
+			System.out.println(round(igra.dimenzija_igre/2)-1);
 		return new Poteza( round(igra.dimenzija_igre/2)-1, round(igra.dimenzija_igre/2)-1 );
 			
 		}
@@ -195,8 +196,7 @@ public class Inteligenca extends splosno.KdoIgra{
        
         
         
-        System.out.println(mozne_poteze);
-        System.out.println(mozne_poteze.size());
+  
         
         igra.preveri_skupine();
         if (igra.skupine_beli.size()!=0 || igra.skupine_crni.size()!=0) {
@@ -227,17 +227,17 @@ public class Inteligenca extends splosno.KdoIgra{
         }
 
         // Perform Monte Carlo simulations
-        int simulations = 400;
+        int simulations = igra.iteracije;
         Map<Poteza, Integer> moveWins = new HashMap<>();
         for (Poteza move : possibleMoves) {
+System.out.println("eo");
             int wins = 0;
             for (int i = 0; i < simulations; i++) {
                 // Clone the game state
                 Igra clonedGame = Kloniraj.kloniraj(igra);
                 // Make a move in the cloned game
                 clonedGame.vrsta_igre = "RR";
-              //  System.out.println("Igra: "+ clonedGame.igralec_na_vrsti);
-               // System.out.println("Poteza: "+ move);
+
                 clonedGame.odigraj(move);
                 if (clonedGame.igralec_na_vrsti.equals("Beli")) clonedGame.igralec_na_vrsti = "Crni";
     			else clonedGame.igralec_na_vrsti = "Beli";
@@ -284,8 +284,7 @@ public class Inteligenca extends splosno.KdoIgra{
                     Poteza randomMove = possibleMovesSim.get(new Random().nextInt(possibleMovesSim.size()));
 
                     // Make the move
-                 //   System.out.println("Igra: "+ clonedGame.igralec_na_vrsti);
-                //    System.out.println("Poteza: "+ randomMove);
+
                     clonedGame.odigraj(randomMove);
                     clonedGame.preveri_skupine();
                     if (clonedGame.skupine_beli.size()!=0 && clonedGame.skupine_crni.size()!=0) {
@@ -308,8 +307,7 @@ public class Inteligenca extends splosno.KdoIgra{
                 
                 // Check the winner
                 
-               // System.out.println("kdo zmaga : " + clonedGame.preveri_igro());
-
+   
                
             }
             moveWins.put(move, wins);
@@ -326,7 +324,6 @@ public class Inteligenca extends splosno.KdoIgra{
             }
         }
 
-        System.out.println("best move : " + bestMove);
         return bestMove;
     }
 	

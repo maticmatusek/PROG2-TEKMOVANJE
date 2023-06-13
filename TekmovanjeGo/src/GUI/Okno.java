@@ -62,29 +62,49 @@ public class Okno extends JFrame implements ActionListener{
 		if (objekt == menu_nova_igra) {
 			JTextField nn = new JTextField();
 			JTextField mm = new JTextField();
+			JTextField zz = new JTextField();
 			JComponent[] polja = {
+				
 					new JLabel("Vnesi velikost igralne plošče:"),nn, new JLabel("Vnesi način igranja(ČČ - človek proti človeku, ČR/RČ - človek proti računalniku, RR - računalnik proti računalniku)"),mm
+			,new JLabel("Vnesi pravila igre (GO,CAPTURE) :"),zz
 			};
 			int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
+			String pravila_igre = zz.getText();
 			if (izbira == JOptionPane.OK_OPTION && nn.getText().matches("\\d+")  && mm.getText().matches("ČČ|RR|RČ|ČR")) {
 				if (Integer.parseInt(nn.getText())>=5) {
 					Igra igra = new Igra();
 					igra.nastavi_dimenzijo(Integer.parseInt(nn.getText())); 
+					igra.pravila_igre = pravila_igre;
+					platno.nastaviIgro(igra);
 					if (mm.getText().matches("RČ")) {
+						igra.pravila_igre = pravila_igre;
 						igra.racunalnik = "Crni";
 						igra.igra_clovek = false;
 						igra.vrsta_igre = "RČ";
 					}
-					if (mm.getText().matches("ČR")) igra.racunalnik = "Beli";
-					platno.nastaviIgro(igra);
-					if (mm.getText().matches("RČ")) {
+					if (mm.getText().matches("ČČ")) {
+						igra.pravila_igre = pravila_igre;
+						igra.racunalnik = null;
+						igra.igra_clovek = true;
+						igra.vrsta_igre = "ČČ";
+					}
+					if (mm.getText().matches("ČR")) {
+						igra.racunalnik = "Beli";
 						
+						igra.vrsta_igre = "ČR";
+						igra.racunalnik = "Beli";
+					}
+
+					if (mm.getText().matches("RČ")) {
+
+						igra.racunalnik = "Crni";
 					//	Inteligenca inteligenca = new Inteligenca("Matic");
 					//	Poteza poteza = inteligenca.izberiPotezo(igra);
 						Vodja vodja = new Vodja();
 						vodja.dodaj_figuro(0,0, igra);
 					}
 					if (mm.getText().matches("RR")) {
+						igra.pravila_igre = pravila_igre;
 						igra.vrsta_igre = "RR";
 						igra.racunalnik = "lala";
 						igra.racunalnik2 = true;
