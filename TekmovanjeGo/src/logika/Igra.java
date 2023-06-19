@@ -1,6 +1,7 @@
 package logika;
 
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ import splosno.Poteza;
 
 public class Igra implements Cloneable{
 
-	public int iteracije;
+	public String poteza_racunalnika;
 	public String zmaga;
 	public String vrsta_igre;
 	public  int dimenzija_igre;
@@ -34,20 +35,23 @@ public class Igra implements Cloneable{
 	public int score_beli;
 	public int score_crni;
 	public int stevilo_preskokov;
+	public int tezavnost_racunalnika;
 
 			
 			public Igra() {
+				this.poteza_racunalnika = "";
+				this.tezavnost_racunalnika = 20;
 				this.stevilo_preskokov = 0;
-				this.iteracije = 10;
 				this.score_beli = 0;
 				this.score_crni = 0;
 				this.pravila_igre= "GO";
 				this.racunalnik2 = false;
 				this.dimenzija_igre = 19;
 				this.vrsta_igre = "ČČ";
-				this.racunalnik = null;
+				this.racunalnik = "";
 				igra_clovek = true;
 				mozna_polja = new HashMap<String,Tocka>();
+				// OB USTVARITVI IGRE SE NAREDI 19X19 IGRALNO POLJE, KI NISO VEČ ALI MANJ VSE INFORMACIJE
 				for (int i = 1; i<=dimenzija_igre;i++) {
 					for (int j = 1; j<=dimenzija_igre;j++) {
 						mozna_polja.put("("+i+", "+j+")",new Tocka( "("+i+", "+j+")",i,j));
@@ -69,6 +73,8 @@ public class Igra implements Cloneable{
 				zmaga = "";
 			}
 			
+			// FUNKCIJA NASTAVI DIMENZIJO IGRE V PRIMERU KASNEJŠE SPREMENITVE OZIROMA NASTAVITVE NOVE IGRE
+			// POSKRBI DA SE IGRALNO POLJE NA NOVO ZGENERIRA
 			public void nastavi_dimenzijo(int dimenzija) {
 				this.dimenzija_igre = dimenzija;
 				mozna_polja = new HashMap<String,Tocka>();
@@ -86,6 +92,7 @@ public class Igra implements Cloneable{
 				}
 			}
 			
+			// FUNKCIJA POSTAVI KAMNČEK NA POLJE IN POSODOBI INFORMACIJE NA IGRALNEM POLJU
 			 public boolean odigraj(Poteza poteza) {
 				 if (mozna_polja.get("("+(poteza.x() + 1 )+", "+(poteza.y()+1)+")").zasedenost == null) {
 					 int x = poteza.x() +1 ;
@@ -119,7 +126,7 @@ public class Igra implements Cloneable{
 				else return false;
 			 }
 			 	
-			
+			// FUNKCIJA DEFINIRA VSE SKUPINE KAMENČKOV IN TUDI PRAZNIH PRESEČIŠČ, KI SE DRŽIJO SKUPAJ
 			public void preveri_skupine(){
 				skupine_beli = new HashSet<HashSet<Tocka>> ();
 				skupine_crni = new HashSet<HashSet<Tocka>> ();
@@ -128,10 +135,13 @@ public class Igra implements Cloneable{
 				crne_tocke = new HashSet<Tocka>();
 				bele_tocke = new HashSet<Tocka>();
 				for (Tocka t : mozna_polja.values()) {
-					if (t.zasedenost == "Beli") bele_tocke.add(t);
-					else if (t.zasedenost == "Crni") crne_tocke.add(t);
-					else if (t.zasedenost == null) prazne_tocke.add(t);
+					if (t.zasedenost == null) prazne_tocke.add(t);
+					else if (t.zasedenost.equals("Beli")) bele_tocke.add(t);
+					else if (t.zasedenost.equals("Crni")) crne_tocke.add(t);
+					
+					
 				}
+
 				
 				
 				
@@ -157,21 +167,21 @@ public class Igra implements Cloneable{
 					bele_tocke.remove(t);
 					zbiralna_mnozica.remove(t);
 					neka_mnozica.add(t);
-					if (t.sosedi.get("Levo") == "Beli") {
+					if (t.sosedi.get("Levo").equals("Beli")) {
 						Tocka u = mozna_polja.get("("+(t.x-1)+", "+t.y+")");
 						if (bele_tocke.contains(u)) zbiralna_mnozica.add(u);
 						
 					}
-					if (t.sosedi.get("Desno") == "Beli") {
+					if (t.sosedi.get("Desno").equals("Beli")) {
 						Tocka u = mozna_polja.get("("+(t.x+1)+", "+t.y+")");
 						if (bele_tocke.contains(u)) zbiralna_mnozica.add(u);	
 					}
-					if (t.sosedi.get("Gor") == "Beli") {
+					if (t.sosedi.get("Gor").equals("Beli")) {
 						Tocka u = mozna_polja.get("("+t.x+", "+(t.y-1)+")");
 						
 						if (bele_tocke.contains(u)) zbiralna_mnozica.add(u);
 					}
-					if (t.sosedi.get("Dol") == "Beli") {
+					if (t.sosedi.get("Dol").equals("Beli")) {
 						Tocka u = mozna_polja.get("("+t.x+", "+(t.y+1)+")");
 						if (bele_tocke.contains(u)) zbiralna_mnozica.add(u);
 					}
@@ -179,6 +189,7 @@ public class Igra implements Cloneable{
 						if (neka_mnozica.size()!=0) skupine_beli.add(neka_mnozica);
 					}
 				}
+
 				
 				// ČRNE TOČKE
 				
@@ -199,21 +210,21 @@ public class Igra implements Cloneable{
 							crne_tocke.remove(t);
 							zbiralna_mnozica.remove(t);
 							neka_mnozica.add(t);
-							if (t.sosedi.get("Levo") == "Crni") {
+							if (t.sosedi.get("Levo").equals("Crni")) {
 								Tocka u = mozna_polja.get("("+(t.x-1)+", "+t.y+")");
 								if (crne_tocke.contains(u)) zbiralna_mnozica.add(u);
 								
 							}
-							if (t.sosedi.get("Desno") == "Crni") {
+							if (t.sosedi.get("Desno").equals("Crni")) {
 								Tocka u = mozna_polja.get("("+(t.x+1)+", "+t.y+")");
 								if (crne_tocke.contains(u)) zbiralna_mnozica.add(u);	
 							}
-							if (t.sosedi.get("Gor") == "Crni") {
+							if (t.sosedi.get("Gor").equals("Crni")) {
 								Tocka u = mozna_polja.get("("+t.x+", "+(t.y-1)+")");
 								
 								if (crne_tocke.contains(u)) zbiralna_mnozica.add(u);
 							}
-							if (t.sosedi.get("Dol") == "Crni") {
+							if (t.sosedi.get("Dol").equals("Crni")) {
 								Tocka u = mozna_polja.get("("+t.x+", "+(t.y+1)+")");
 								if (crne_tocke.contains(u)) zbiralna_mnozica.add(u);
 							}
@@ -267,6 +278,8 @@ public class Igra implements Cloneable{
 						
 			}
 			
+			// FUNKCIJA PREVERI STANJE IGRE CAPTURE GO
+			// UPORABNA TUDI PRI IGRI GO ZA PREVERJANJE, ČE JE POTREBNO SKUPINO IZBRISATI
 			public String preveri_igro() {
 				preveri_skupine();
 				for (HashSet<Tocka> skupina : skupine_crni) {
@@ -297,6 +310,7 @@ public class Igra implements Cloneable{
 				return "";
 			}
 			
+			// FUNKCIJA VRNE NAKLJUČEN ELEMENT IN MNOŽICE TOČK
 			public static Tocka randomTockaFromSet(Set<Tocka> set) {
 				List<Tocka> list = new ArrayList<>(set);
 
@@ -308,27 +322,7 @@ public class Igra implements Cloneable{
 			}
 			
 
-			
-			@Override
-		    public Igra clone() {
-		        Igra cloned = new Igra();
-		        cloned.vrsta_igre = this.vrsta_igre;
-		        cloned.dimenzija_igre = this.dimenzija_igre;
-		        cloned.mozna_polja = new HashMap<>(this.mozna_polja);
-		        cloned.skupine_beli = new HashSet<>(this.skupine_beli);
-		        cloned.skupine_crni = new HashSet<>(this.skupine_crni);
-		        cloned.bele_tocke = new HashSet<>(this.bele_tocke);
-		        cloned.crne_tocke = new HashSet<>(this.crne_tocke);
-		        cloned.igralec_na_vrsti = this.igralec_na_vrsti;
-		        cloned.igramo = this.igramo;
-		        cloned.racunalnik = this.racunalnik;
-		        cloned.racunalnik2 = this.racunalnik2;
-		        cloned.igra_clovek = this.igra_clovek;
-		        return cloned;
-		    }
-			
-
-			
+			// FUNKCIJA POIŠČE PROSTA POLJA OKOLI SKUPIN DOLOČENE BARVE
 			public Set<Poteza> prosta_polja_okoli_skupine(String barva) {
 				Set<Poteza>okoli_skupin = new HashSet<>();
 				preveri_skupine();
@@ -354,6 +348,7 @@ public class Igra implements Cloneable{
 				return okoli_skupin;
 			}
 			
+			// FUNKCIJA VRNE MNOŽICO PROSTIH POLJ, OKOLI VHODNEGA POLJA
 			public Set<Poteza> dodaj_poteze(Poteza poteza){
 				Set<Poteza>izhod = new HashSet<>();
 				int x = poteza.x()+1;
@@ -365,6 +360,7 @@ public class Igra implements Cloneable{
 				return izhod;
 			}
 			
+			// FUNKCIJA OVREDNOTI KONČNO STANJE IGRE GO
 			public void preveri_igro_go() {
 				igramo = false;
 				preveri_skupine();
@@ -390,6 +386,7 @@ public class Igra implements Cloneable{
 				else zmaga = "IZENAČENO";
 			}
 			
+			// FUNKCIJA IZBRIŠE SKUPINO, KI JE BILA ZAVZETA V IGRI GO
 			public void izbrisi_skupino(HashSet<Tocka> skupina) {
 				for (Tocka t : skupina) {
 					t.zasedenost = null;
@@ -400,6 +397,7 @@ public class Igra implements Cloneable{
 				}
 			}
 		
+			// FUNKCIJA NAJDE SKUPINO, KI JE BILA ZAVZETA V IGRI GO
 			public Set<HashSet<Tocka>> najdi_skupine_za_zbrisat(String barva){
 				preveri_skupine();
 				String zasedenost = null;
@@ -413,6 +411,7 @@ public class Igra implements Cloneable{
 					skupine_barve = skupine_crni;
 					zasedenost = "Beli";
 				}
+				
 				for (HashSet<Tocka> skupina : skupine_barve ) {
 					HashSet<String> preverjanje = new HashSet<String>();
 					for (Tocka t : skupina) {

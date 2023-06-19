@@ -32,36 +32,35 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	
 	protected Igra igra;
 	protected int polmer;
-	protected Color barva_odzadja, barva_crt, barva_pik, barva_beli, barva_crni, barva_crni_rob, barva_beli_rob;
-	private final static int DELAY = 1;
+	public String poteza_racunalnika;
+	
 	private int i = 0;
+	public Color barva_belih_kamenckov;
+	public Color barva_crnih_kamenckov;
+	public Color barva_crt;
+	public Color barva_odzadja;
+	public Color barva_gumbov;
+	public Color barva_napisov;
+	public int tezavnost_racunalnika;
 	
 	public Platno(int sirina, int visina) {
 		super();
+		this.barva_belih_kamenckov = Color.WHITE;
+		this.barva_crnih_kamenckov = Color.black;
+		this.barva_crt = Color.black;
+		this.barva_odzadja = Color.orange;
+		this.barva_gumbov = Color.GRAY;
+		this.barva_napisov = Color.CYAN;
+		this.tezavnost_racunalnika = 20;
 		polmer = 0;
 		this.igra = null;
+		poteza_racunalnika = "";
 		setPreferredSize(new Dimension(sirina,visina));
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
 		setFocusable(true);
-		barva_odzadja = Color.ORANGE;
-		barva_crt = Color.BLACK;
-		barva_pik = Color.BLACK;
-		barva_beli = Color.white;
-		barva_crni = Color.black;
-		barva_crni_rob = Color.BLACK;
-		barva_beli_rob = Color.BLACK;
-		Timer timer = new Timer(DELAY, new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            i++;
-	            if (i == 4) {
-	                i = 0;
-	            }
-	        }
-	    });
-	    timer.start();
+		
 	}
 		
 
@@ -83,6 +82,8 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		polmer = (int)(sirina_kvadrata/1.1);
 		int polmer_spodnji = (int)(sirina_kvadrata/2);
 		int debelina = (int)(sirina_kvadrata/13);
+		
+		// IZRIS ČRT IN PIK NA POLJU
 		for (int i=0;i<dimenzija_igre;i++) {
 			g.setColor(barva_crt);
 			g2.setStroke(new BasicStroke(debelina));
@@ -97,7 +98,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 					(int) (odmik_od_strani + i*(velikost_okna-2*odmik_od_strani)/(dimenzija_igre-1)));
 		}
 		if (dimenzija_igre%4!=0 && dimenzija_igre%2!=0) {
-			g.setColor(barva_pik);
+			g.setColor(barva_crt);
 			
 			g.fillOval(  (int)(odmik_od_strani + ((dimenzija_igre/2)+0.5)*(velikost_okna-2*odmik_od_strani)/(dimenzija_igre) -polmer_spodnji/2) , (int)(odmik_od_strani + ((dimenzija_igre/2)+0.5)*(velikost_okna-2*odmik_od_strani)/(dimenzija_igre) - polmer_spodnji/2), polmer_spodnji,polmer_spodnji);
 		
@@ -115,26 +116,29 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		}
 		if (igra!=null) {
 		Map<String, Tocka> mozna_polja = izracunaj_koordinate_tock(igra.mozna_polja);
+		
+		// IZRIS KAMENČKOV NA POLJU
 		for (Tocka t : mozna_polja.values()) {
 			
 			if (t.zasedenost=="Beli") {
-				g.setColor(barva_beli);
+				g.setColor(barva_belih_kamenckov);
 				g.fillOval( (int)(t.xx -polmer/2), (int)(t.yy -polmer/2) , polmer,polmer);
-				g.setColor(barva_beli_rob);
+				g.setColor(barva_crt);
 				g.drawOval((int)(t.xx -polmer/2), (int)(t.yy -polmer/2), polmer, polmer);
 			}
 			else if (t.zasedenost=="Crni") {
-				g.setColor(barva_crni);
+				g.setColor(barva_crnih_kamenckov);
 				g.fillOval( (int)(t.xx -polmer/2), (int)(t.yy -polmer/2) , polmer,polmer);
-				g.setColor(barva_crni_rob);
+				g.setColor(barva_crt);
 				g.drawOval((int)(t.xx -polmer/2), (int)(t.yy -polmer/2), polmer, polmer);
 			}
 			
 		}
 		}
 		 
-		g.setColor(Color.CYAN);
-		if (igra.preveri_igro().equals("ZMAGA BELI")||igra.zmaga.equals("Beli")) {
+		// IZRIS NAPISOV NA POLJU
+		g.setColor(barva_napisov);
+		if ((igra.preveri_igro().equals("ZMAGA BELI") && igra.pravila_igre.equals("CAPTURE"))||igra.zmaga.equals("Beli")) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
 			 g2.drawString("Zmaga beli!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
 			 if (igra.pravila_igre.equals("GO")) {
@@ -142,7 +146,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 				 g2.drawString("Točke črni: " + igra.score_crni + "            " + "Točke beli: " + igra.score_beli, round(velikost_okna/5), round(odmik_od_strani*15));
 			 }
 		}
-		else if (igra.preveri_igro().equals("ZMAGA CRNI") || igra.zmaga.equals("Crni")) {
+		else if ((igra.preveri_igro().equals("ZMAGA CRNI") && igra.pravila_igre.equals("CAPTURE") )|| igra.zmaga.equals("Crni")) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
 			 g2.drawString("Zmaga črni!", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
 			 if (igra.pravila_igre.equals("GO")) {
@@ -153,16 +157,32 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		else if (igra.zmaga.equals("IZENAČENO")) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/15) ));
 			g2.drawString("Izenačeno", round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
+			if (igra.pravila_igre.equals("GO")) {
+				 g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/25) ));
+				 g2.drawString("Točke črni: " + igra.score_crni + "            " + "Točke beli: " + igra.score_beli, round(velikost_okna/5), round(odmik_od_strani*14.9));
+			 }
 		}
-		
+		// IZRIS GUMBOV NA POLJU
 	    if (igra.pravila_igre.equals("GO")) {
 	    	g.setFont(new Font("TimesRoman", Font.PLAIN, (int)(odmik_od_strani*5/11) ));
-	 
-	    	g2.setColor(Color.GRAY );
+	    	g2.setStroke(new BasicStroke(debelina*1/2));
+	    	g2.setColor(barva_gumbov );
 	    	g2.drawRect( (int) (odmik_od_strani/10) , (int) (odmik_od_strani/10), (int)(2.4 *odmik_od_strani), (int)(odmik_od_strani*5/10));
-	    	g2.drawString("PRESKOČI", (int) (odmik_od_strani/9) , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 ));
+	    	g2.drawString("PRESKOČI", (int) (odmik_od_strani/9+odmik_od_strani*5/100) , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 -odmik_od_strani*2/100 ));
 	    	g2.drawRect( (int) (velikost_okna - 2*odmik_od_strani - odmik_od_strani*2.8/10) , (int) (odmik_od_strani/10), (int)(2.2*odmik_od_strani), (int)(odmik_od_strani*5/10));
-	    	g2.drawString("PREDAJA", (int) (velikost_okna - 1.9*odmik_od_strani - odmik_od_strani*2.8/10)  , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 ));
+	    	g2.drawString("PREDAJA", (int) (velikost_okna - 1.95*odmik_od_strani - odmik_od_strani*2.8/10)  , (int) (odmik_od_strani/10 + odmik_od_strani*9/20 -odmik_od_strani*2/100 ));
+	    }
+	    if (igra.pravila_igre.equals("GO") && !igra.zmaga.equals("Crni") && !igra.zmaga.equals("Beli") && !igra.preveri_igro().equals("ZMAGA CRNI") && !igra.preveri_igro().equals("ZMAGA BELI") && !igra.zmaga.equals("IZENAČENO") ) {
+	    	g.setFont(new Font("TimesRoman", Font.PLAIN, (int)(odmik_od_strani*5/11) ));
+	 
+	    	g2.setColor(barva_gumbov );
+	    	g2.drawRect( (int) (velikost_okna/2.5) , (int) (velikost_okna*95/100), (int)(2.8 *odmik_od_strani), (int)(odmik_od_strani*5/10));
+	    	g2.drawString("OVREDNOTI", (int) (velikost_okna/2.47) , (int) (velikost_okna*94.5/100 + odmik_od_strani*5/10 ));
+	    }
+	    if (igra.igramo && !igra.vrsta_igre.equals("ČČ")) {
+	    	g2.setColor(barva_gumbov );
+	    	g.setFont(new Font("TimesRoman", Font.PLAIN,round(velikost_okna/30) ));
+			g2.drawString(igra.poteza_racunalnika , round(velikost_okna/3), round(odmik_od_strani-0.2*odmik_od_strani));
 	    }
 	    revalidate();
 	    repaint();
@@ -170,7 +190,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	
 	
 	
-	
+	// FUNKCIJA KI IZRAČUNA KOORDINATE ZA KAMENČEK NA POLJU V PRIMERU KLIKA
 	public Map<String, Tocka> izracunaj_koordinate_tock(Map<String, Tocka> mozna_polja){
 		int dimenzija_igre = igra.dimenzija_igre;
 		double velikost_okna = Math.min(getWidth(),getHeight());
@@ -201,6 +221,10 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseMoved(MouseEvent e) {}
 
+	
+	
+	// FUKCIJA GLEDE NA KLIK NA POLJE DODA KAMENČEK NA POLJE
+	// V DRUGEM DELU FUNKCIJA POSKRBI, DA SE NE ZGODI ISTI TRENUTEK KLIK NA GUMB IN KLIK NA POLJE
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (!igra.igra_clovek) return ;
@@ -222,7 +246,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 				}
 			}
 			repaint();
-			if (koordinata_x >=1 && koordinata_x <= dimenzija_igre && koordinata_y >=1 && koordinata_y <= dimenzija_igre) {
+			if (koordinata_x >=1 && koordinata_x <= dimenzija_igre && koordinata_y >=1 && koordinata_y <= dimenzija_igre && y>= odmik_od_strani/10 + odmik_od_strani*5/10 && y<= velikost_okna*95/100 ) {
 				if (igra.mozna_polja.get("("+koordinata_x+", "+koordinata_y+")").zasedenost == null) {
 					igra.mozna_polja.get("("+koordinata_x+", "+koordinata_y+")").zasedenost = "Beli";
 					repaint();
@@ -233,13 +257,13 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			}
 			if ( igra.pravila_igre.equals("GO") && x >= odmik_od_strani/10 && x<= odmik_od_strani/10 + 2.4 *odmik_od_strani &&
 					y >= odmik_od_strani/10 &&  y <= odmik_od_strani/10 + odmik_od_strani*5/10) {
-				System.out.println(igra.vrsta_igre);
+				
 				igra.stevilo_preskokov = igra.stevilo_preskokov + 1;
 				if (igra.stevilo_preskokov>=2) igra.preveri_igro_go();
 				if (igra.igralec_na_vrsti.equals("Crni")) igra.igralec_na_vrsti = "Beli";
 				else igra.igralec_na_vrsti = "Crni";
 				if ((igra.vrsta_igre.equals("RČ") || igra.vrsta_igre.equals("ČR")) && igra.igra_clovek == true ) {
-					igra.igra_clovek = false;
+					
 					Vodja vodja = new Vodja();
 					vodja.dodaj_figuro(1, 1, igra);
 				}
@@ -250,7 +274,12 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 				igra.igramo = false;
 				if (igra.igralec_na_vrsti.equals("Crni")) igra.zmaga = "Beli";
 				else igra.zmaga = "Crni";
-			}	
+			}
+			if ( igra.pravila_igre.equals("GO") && x >= velikost_okna/2.5 && x<= velikost_okna/2.5 + 2.8 *odmik_od_strani &&
+					y >= velikost_okna*95/100 &&  y <= velikost_okna*95/100 + odmik_od_strani*5/10 ) {
+				igra.igramo = false;
+				igra.preveri_igro_go();
+			}
 			repaint();
 		}
 		repaint();
@@ -297,18 +326,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 	}
 	
-	public void refreshScreen() {
-	    Timer timer = new Timer(0, new ActionListener() {
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	        repaint();
-	      }
-	    });
-	    timer.setRepeats(true);
-	    // Aprox. 60 FPS
-	    timer.setDelay(17);
-	    timer.start();
-	  }
+
 	
 
 }

@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class Kloniraj {
 
+	// CLASS ZA KLONIRANJE IGRE
+	
 	@SuppressWarnings("removal")
 	public static Igra kloniraj(Igra igra1) {
 			int dimenzija_igre = new Integer(igra1.dimenzija_igre);
@@ -21,16 +23,17 @@ public class Kloniraj {
 				  int y = new Integer(t.y);
 				  String ime = new String(t.ime);
 				  Tocka u = new Tocka(ime,x,y);
+				  if (t.zasedenost==null) {
+					  
+				  }
+				  else  u.zasedenost = new String(t.zasedenost);
+				 
 				  u.sosedi = new HashMap<String,String>(t.sosedi);
 				  mozna_polja2.put(u.ime, u);
 			  }
 			  
 			  
-			  
-			  Set<HashSet<Tocka>> skupine_beli2 = new HashSet<HashSet<Tocka>>(igra1.skupine_beli);
-			  Set<HashSet<Tocka>> skupine_crni2 = new HashSet<HashSet<Tocka>>(igra1.skupine_crni);
-			  Set<Tocka> bele_tocke2 = new HashSet<Tocka>(igra1.bele_tocke);
-			  Set<Tocka> crne_tocke2 = new HashSet<Tocka>(igra1.crne_tocke);
+			 
 			  String igralec_na_vrsti2 = new String(igra1.igralec_na_vrsti);
 			  Boolean igramo2 = new Boolean(igra1.igramo);
 			  String racunalnik2 = new String(igra1.racunalnik);
@@ -39,18 +42,26 @@ public class Kloniraj {
 		 	  igra2.vrsta_igre = vrsta_igre2;
 		 	  igra2.dimenzija_igre = dimenzija_igre2;
 		 	  igra2.mozna_polja = mozna_polja2;
-		 	  igra2.skupine_beli = skupine_beli2;
-		 	  igra2.skupine_crni = skupine_crni2;
-		 	  igra2.bele_tocke = bele_tocke2;
-		 	  igra2.crne_tocke = crne_tocke2;
 		 	  igra2.igralec_na_vrsti = igralec_na_vrsti2;
 		 	  igra2.igramo = igramo2;
 		 	  igra2.racunalnik = racunalnik2;
 		 	  igra2.racunalnik2 = racunalnik22;
 		 	  igra2.igra_clovek = igra_clovek2;
 		 	  igra2.pravila_igre = new String(igra1.pravila_igre);
+		 	  igra2.score_beli = new Integer(igra1.score_beli);
+		 	  igra2.score_crni = new Integer(igra1.score_crni);
+		 	  igra2.zmaga = new String(igra1.zmaga);
+		 	  igra2.stevilo_preskokov = new Integer(igra1.stevilo_preskokov);
+		 	  igra2.tezavnost_racunalnika = new Integer(igra1.tezavnost_racunalnika );
+		 	  igra2.preveri_skupine();
+		 	  
 		 	  
 		 	  
 			return igra2;
+	}
+	
+	public Tocka kloniraj_tocko (Tocka t) {
+		
+		return null;
 	}
 }

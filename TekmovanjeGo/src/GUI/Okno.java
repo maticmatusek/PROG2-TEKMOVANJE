@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -13,7 +14,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import inteligenca.Inteligenca;
 import logika.Igra;
@@ -25,9 +29,30 @@ import logika.Vodja;
 public class Okno extends JFrame implements ActionListener{
 	public Platno platno;
 	private JMenuItem menu_nova_igra;
+	private JMenuItem menu_barva_belih_kamenckov;
+	private JMenuItem menu_barva_crnih_kamenckov;
+	private JMenuItem menu_barva_odzadja;
+	private JMenuItem menu_barva_crt;
+	private JMenuItem menu_barva_gumbov;
+	private JMenuItem menu_barva_napisov;
+	private JMenuItem menu_tezavnost;
+	public Color barva_belih_kamenckov;
+	public Color barva_crnih_kamenckov;
+	public Color barva_crt;
+	public Color barva_odzadja;
+	public Color barva_gumbov;
+	public Color barva_napisov;
+	public int tezavnost_racunalnika;
 
 	public Okno() {
 		super();
+		this.barva_belih_kamenckov = Color.WHITE;
+		this.barva_crnih_kamenckov = Color.black;
+		this.barva_crt = Color.black;
+		this.barva_odzadja = Color.orange;
+		this.barva_gumbov = Color.GRAY;
+		this.barva_napisov = Color.CYAN;
+		this.tezavnost_racunalnika = 20;
 		setTitle("Go");
 		platno = new Platno(800,800);
 		add(platno);
@@ -38,6 +63,15 @@ public class Okno extends JFrame implements ActionListener{
 		
 		JMenu menu_igra = dodajMenu(menubar, "Igra");
 		menu_nova_igra = dodajMenuItem(menu_igra, "Nova igra");
+		
+		JMenu menu_nastavitve = dodajMenu(menubar, "Nastavitve");
+		menu_barva_belih_kamenckov = dodajMenuItem(menu_nastavitve, "Barva belih kamenčkov");
+		menu_barva_crnih_kamenckov = dodajMenuItem(menu_nastavitve, "Barva črnih kamenčkov");
+		menu_barva_odzadja = dodajMenuItem(menu_nastavitve, "Barva odzadja");
+		menu_barva_crt = dodajMenuItem(menu_nastavitve, "Barva črt na polju");
+		menu_barva_gumbov = dodajMenuItem(menu_nastavitve, "Barva gumbov");
+		menu_barva_napisov = dodajMenuItem(menu_nastavitve, "Barva končnih napisov");
+		menu_tezavnost = dodajMenuItem(menu_nastavitve, "Težavnost računalnika");
 	}
 	
 	private JMenu dodajMenu(JMenuBar menubar, String naslov) {
@@ -59,77 +93,158 @@ public class Okno extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		
 		Object objekt = e.getSource();
+		
+		// MENU ZA USTVARITI NOVO IGRO
 		if (objekt == menu_nova_igra) {
-			JTextField nn = new JTextField();
-			JTextField mm = new JTextField();
-			JTextField zz = new JTextField();
-			JComponent[] polja = {
+	        
+	        
+	        JComboBox<String> proti_komu_igramo = new JComboBox<>(new String[]{"ČLOVEK-ČLOVEK", "ČLOVEK-RAČUNALNIK", "RAČUNALNIK-ČLOVEK"});
+	        JComboBox<String> katera_igra = new JComboBox<>(new String[]{"GO", "CAPTURE GO"});
+	        JComboBox<String> velikost_plosce = new JComboBox<>(new String[]{"9X9","13X13","19X19"});
+	        
+	        JComponent[] polja = {
+	            
+	            new JLabel("Izberi nasprotnika:"),
+	            proti_komu_igramo,
+	            new JLabel("Izberi vrsto igre:"),
+	            katera_igra,
+	            new JLabel("Izberi velikost plošče:"),
+	            velikost_plosce
+	        };
+
+	        int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
+	        
+			
+			
+			if (izbira == JOptionPane.OK_OPTION) {
 				
-					new JLabel("Vnesi velikost igralne plošče:"),nn, new JLabel("Vnesi način igranja(ČČ - človek proti človeku, ČR/RČ - človek proti računalniku, RR - računalnik proti računalniku)"),mm
-			,new JLabel("Vnesi pravila igre (GO,CAPTURE) :"),zz
-			};
-			int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
-			String pravila_igre = zz.getText();
-			if (izbira == JOptionPane.OK_OPTION && nn.getText().matches("\\d+")  && mm.getText().matches("ČČ|RR|RČ|ČR")) {
-				if (Integer.parseInt(nn.getText())>=5) {
-					Igra igra = new Igra();
-					igra.nastavi_dimenzijo(Integer.parseInt(nn.getText())); 
-					igra.pravila_igre = pravila_igre;
-					platno.nastaviIgro(igra);
-					if (mm.getText().matches("RČ")) {
-						igra.pravila_igre = pravila_igre;
-						igra.racunalnik = "Crni";
-						igra.igra_clovek = false;
-						igra.vrsta_igre = "RČ";
-					}
-					if (mm.getText().matches("ČČ")) {
-						igra.pravila_igre = pravila_igre;
-						igra.racunalnik = null;
-						igra.igra_clovek = true;
-						igra.vrsta_igre = "ČČ";
-					}
-					if (mm.getText().matches("ČR")) {
-						igra.racunalnik = "Beli";
-						
-						igra.vrsta_igre = "ČR";
-						igra.racunalnik = "Beli";
-					}
-
-					if (mm.getText().matches("RČ")) {
-
-						igra.racunalnik = "Crni";
-					//	Inteligenca inteligenca = new Inteligenca("Matic");
-					//	Poteza poteza = inteligenca.izberiPotezo(igra);
-						Vodja vodja = new Vodja();
-						vodja.dodaj_figuro(0,0, igra);
-					}
-					if (mm.getText().matches("RR")) {
-						igra.pravila_igre = pravila_igre;
-						igra.vrsta_igre = "RR";
-						igra.racunalnik = "lala";
-						igra.racunalnik2 = true;
-						igra.igra_clovek = false;
-						Inteligenca inteligenca = new Inteligenca("Matic");
-						Poteza poteza = inteligenca.izberiPotezo(igra);
-						Vodja vodja = new Vodja();
-						vodja.dodaj_figuro(poteza.x()+1, poteza.y()+1, igra);
-					}
-				}
-				else {JOptionPane.showMessageDialog(null, "Premajhna igralna plošča!", "ERROR", JOptionPane.WARNING_MESSAGE);}
-			}
-			else if (izbira != JOptionPane.CANCEL_OPTION && izbira != JOptionPane.CLOSED_OPTION) {
-				JOptionPane.showMessageDialog(null, "Vnos je napačen!", "ERROR", JOptionPane.WARNING_MESSAGE);
+				Igra igra = new Igra();
+		        igra.tezavnost_racunalnika = tezavnost_racunalnika;
+		        
+		        
+		        String katero_igro = (String) katera_igra.getSelectedItem();
+		        if (katero_igro.equals("GO")) igra.pravila_igre = "GO";
+		        else if (katero_igro.equals("CAPTURE GO")) igra.pravila_igre = "CAPTURE";
+		        
+		        String plosca = (String) velikost_plosce.getSelectedItem();
+		        if (plosca.equals("9X9")) igra.nastavi_dimenzijo(9);
+		        else if (plosca.equals("19X19")) igra.nastavi_dimenzijo(19);
+		        else if (plosca.equals("13X13")) igra.nastavi_dimenzijo(13);
+					
+		        platno.nastaviIgro(igra);
+		        
+		        String proti_komu = (String) proti_komu_igramo.getSelectedItem();
+		        if (proti_komu.equals("ČLOVEK-ČLOVEK")) {
+		        	igra.vrsta_igre = "ČČ";
+		        	igra.racunalnik = null;
+		        	igra.igra_clovek = true;
+		        }
+		        else if (proti_komu.equals("ČLOVEK-RAČUNALNIK")) {
+		        	igra.vrsta_igre = "ČR";
+		        	igra.racunalnik = "Beli";
+		        	igra.igra_clovek = true;
+		        }
+		        else if (proti_komu.equals("RAČUNALNIK-ČLOVEK")) {
+		        	igra.vrsta_igre = "RČ";
+		        	igra.racunalnik = "Crni";
+					igra.igra_clovek = false;
+					Vodja vodja = new Vodja();
+					vodja.dodaj_figuro(0,0, igra);
+		        }
+					
+				
+				
 			}
 			
+			
 		}
-//		else if (objekt == menuShrani) {
-//			JFileChooser dialog = new JFileChooser();
-//			int izbira = dialog.showSaveDialog(this); // this se nanaša na to okno kjer stvar živi oz. razred in dokler je chooser odprt nemoremo nič delat
-//			if (izbira == JFileChooser.APPROVE_OPTION) {
-//				String ime = dialog.getSelectedFile().getPath();
-//				platno.graf.shrani(ime);
-//			}
-//		}
+		
+		// MENUJI ZA BARVO KAMENČKOV, ...
+		else if (objekt == menu_barva_crnih_kamenckov) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo črnih kamenčkov", platno.barva_crnih_kamenckov );
+			if (barva != null) {
+				platno.barva_crnih_kamenckov = barva;
+				repaint();
+			}
+		}
+		else if (objekt == menu_barva_belih_kamenckov) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo belih kamenčkov", platno.barva_belih_kamenckov );
+			if (barva != null) {
+				platno.barva_belih_kamenckov = barva;
+				repaint();
+			}
+		}
+		else if (objekt == menu_barva_odzadja) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo odzadja", platno.barva_odzadja );
+			if (barva != null) {
+				platno.barva_odzadja = barva;
+				platno.setBackground(barva);
+				repaint();
+			}
+		}
+		else if (objekt == menu_barva_napisov) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo napisov", platno.barva_napisov );
+			if (barva != null) {
+				platno.barva_napisov = barva;
+				repaint();
+			}
+		}
+		else if (objekt == menu_barva_gumbov) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo gumbov", platno.barva_gumbov );
+			if (barva != null) {
+				platno.barva_gumbov = barva;
+				repaint();
+			}
+		}
+		else if (objekt == menu_barva_crt) {
+			Color barva = JColorChooser.showDialog(this, "Izberi barvo črt", platno.barva_crt );
+			if (barva != null) {
+				platno.barva_crt = barva;
+				repaint();
+			}
+		}
+		
+		// MENU ZA TEŽAVNOST
+		else if (objekt == menu_tezavnost) {
+		    JSlider slider = new JSlider(1, 1000);
+		    
+		    
+		    slider.setPaintTrack(true);
+		    slider.setPaintTicks(true);
+		    slider.setPaintLabels(true);
+		    slider.setMajorTickSpacing(100);
+		    slider.setMinorTickSpacing(10);
+
+		    
+		    JLabel valueLabel = new JLabel("Težavnost računalnika želim nastaviti na: " + slider.getValue());
+		    
+		  
+		    JComponent[] polja = {
+		        valueLabel,
+		        slider,
+		        new JLabel("Večje kot je število pametnejši bo računalnik, vendar bo potreboval več časa za odgovor; prav tako če je večje igralno polje")
+		    };
+
+	
+		    slider.addChangeListener(new ChangeListener() {
+		        @Override
+		        public void stateChanged(ChangeEvent e) {
+		            int sliderValue = slider.getValue();
+		            valueLabel.setText("Težavnost računalnika je " + sliderValue);
+		        }
+		    });
+
+		    int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
+
+		    if (izbira == JOptionPane.OK_OPTION) {
+		            platno.tezavnost_racunalnika = slider.getValue();
+		            tezavnost_racunalnika = slider.getValue();
+		            platno.igra.tezavnost_racunalnika = tezavnost_racunalnika;
+		        } 
+		}
+
+		
+		
 		repaint();
 	}
 
