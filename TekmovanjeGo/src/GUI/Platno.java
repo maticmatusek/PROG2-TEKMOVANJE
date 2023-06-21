@@ -239,6 +239,16 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			g2.drawString(igra.poteza_racunalnika, round(velikost_okna / 3),
 					round(odmik_od_strani - 0.2 * odmik_od_strani));
 		}
+		if (igra.igramo && igra.pravila_igre.equals("GO")) {
+			
+			g.setFont(new Font("TimesRoman", Font.PLAIN, round(velikost_okna / 25)));
+			g2.setColor(barva_crnih_kamenckov);
+			g2.drawString("Točke črni: " + igra.score_crni ,
+					round(velikost_okna / 9), round(odmik_od_strani * 14.9));
+			g2.setColor(barva_belih_kamenckov);
+			g2.drawString("                                                 " + "Točke beli: " + igra.score_beli,
+					round(velikost_okna / 9), round(odmik_od_strani * 14.9));
+		}
 		revalidate();
 		repaint();
 	}

@@ -333,7 +333,7 @@ public class Inteligenca extends splosno.KdoIgra {
 		}
 
 		// ZAČETEK MONTE CARLA
-		int simulations = 1; // igra.tezavnost_racunalnika ;
+		int simulations = igra.tezavnost_racunalnika ;
 
 		Map<Poteza, Integer> moveWins = new HashMap<>();
 
@@ -431,14 +431,23 @@ public class Inteligenca extends splosno.KdoIgra {
 		Poteza bestMove = null;
 		int bestWins = -1;
 		for (Map.Entry<Poteza, Integer> entry : moveWins.entrySet()) {
+			Igra klonirana_igra = Kloniraj.kloniraj(igra);
+			klonirana_igra.odigraj(entry.getKey());
+			Set<HashSet<Tocka>> skupine = klonirana_igra.najdi_skupine_za_zbrisat(currentPlayer);
 
-			if (entry.getValue() > bestWins) {
+			
+			if (entry.getValue() > bestWins && skupine.size() == 0) {
 				bestMove = entry.getKey();
 				bestWins = entry.getValue();
 			}
 		}
-		System.out.println(bestMove);
-		igra.poteza_racunalnika = "Računalnik igra x= " + (bestMove.x() + 1) + "  y= " + (bestMove.y() + 1);
+		if (bestMove == null) {
+			
+		}
+		else {
+			igra.poteza_racunalnika = "Računalnik igra x= " + (bestMove.x() + 1) + "  y= " + (bestMove.y() + 1);
+		}
+		
 		return bestMove;
 	}
 

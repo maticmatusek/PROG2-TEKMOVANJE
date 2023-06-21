@@ -102,6 +102,14 @@ public class Igra implements Cloneable {
 
 	// FUNKCIJA POSTAVI KAMNČEK NA POLJE IN POSODOBI INFORMACIJE NA IGRALNEM POLJU
 	public boolean odigraj(Poteza poteza) {
+		if (poteza == null) {
+			stevilo_preskokov = stevilo_preskokov +1;
+			poteza_racunalnika = "Računalnik je preskočil potezo";
+			if (stevilo_preskokov >= 2) {
+				preveri_igro_go();
+			}
+			return true;
+		}
 		if (mozna_polja.get("(" + (poteza.x() + 1) + ", " + (poteza.y() + 1) + ")").zasedenost == null) {
 			int x = poteza.x() + 1;
 			int y = poteza.y() + 1;
@@ -407,6 +415,12 @@ public class Igra implements Cloneable {
 				score_beli = score_beli + skupina.size();
 			}
 			;
+		}
+		for (Tocka t : mozna_polja.values()) {
+			if (t.zasedenost != null) {
+				if (t.zasedenost == "Beli") score_beli = score_beli + 1;
+				else if (t.zasedenost == "Crni") score_crni = score_crni + 1;
+			}
 		}
 
 		if (score_beli > score_crni) {

@@ -30,6 +30,7 @@ import logika.Vodja;
 public class Okno extends JFrame implements ActionListener {
 	public Platno platno;
 	private JMenuItem menu_nova_igra;
+	private JMenuItem navodila_igre;
 	private JMenuItem menu_barva_belih_kamenckov;
 	private JMenuItem menu_barva_crnih_kamenckov;
 	private JMenuItem menu_barva_odzadja;
@@ -64,6 +65,7 @@ public class Okno extends JFrame implements ActionListener {
 
 		JMenu menu_igra = dodajMenu(menubar, "Igra");
 		menu_nova_igra = dodajMenuItem(menu_igra, "Nova igra");
+		navodila_igre = dodajMenuItem(menu_igra, "Navodila igre");
 
 		JMenu menu_nastavitve = dodajMenu(menubar, "Nastavitve");
 		menu_barva_belih_kamenckov = dodajMenuItem(menu_nastavitve, "Barva belih kamenčkov");
@@ -73,6 +75,7 @@ public class Okno extends JFrame implements ActionListener {
 		menu_barva_gumbov = dodajMenuItem(menu_nastavitve, "Barva gumbov");
 		menu_barva_napisov = dodajMenuItem(menu_nastavitve, "Barva končnih napisov");
 		menu_tezavnost = dodajMenuItem(menu_nastavitve, "Težavnost računalnika");
+		
 	}
 
 	private JMenu dodajMenu(JMenuBar menubar, String naslov) {
@@ -107,7 +110,7 @@ public class Okno extends JFrame implements ActionListener {
 					new JLabel("Izberi nasprotnika:"), proti_komu_igramo, new JLabel("Izberi vrsto igre:"), katera_igra,
 					new JLabel("Izberi velikost plošče:"), velikost_plosce };
 
-			int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
+			int izbira = JOptionPane.showConfirmDialog(this, polja, "Izberi možnosti igranja", JOptionPane.OK_CANCEL_OPTION);
 
 			if (izbira == JOptionPane.OK_OPTION) {
 
@@ -204,23 +207,51 @@ public class Okno extends JFrame implements ActionListener {
 			JLabel valueLabel = new JLabel("Težavnost računalnika želim nastaviti na: " + slider.getValue());
 
 			JComponent[] polja = { valueLabel, slider, new JLabel(
-					"Večje kot je število pametnejši bo računalnik, vendar bo potreboval več časa za odgovor; prav tako če je večje igralno polje") };
+					"Večje kot je število pametnejši bo računalnik, vendar bo potreboval več časa za odgovor; prav tako če je večje igralno polje (Začetna nastavitev je 20).") };
 
 			slider.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					int sliderValue = slider.getValue();
-					valueLabel.setText("Težavnost računalnika je " + sliderValue);
+					valueLabel.setText("Težavnost računalnika želim nastaviti na: " + sliderValue);
 				}
 			});
 
-			int izbira = JOptionPane.showConfirmDialog(this, polja, "Vnos", JOptionPane.OK_CANCEL_OPTION);
+			int izbira = JOptionPane.showConfirmDialog(this, polja, "Izberi težavnost računalnika", JOptionPane.OK_CANCEL_OPTION);
 
 			if (izbira == JOptionPane.OK_OPTION) {
 				platno.tezavnost_racunalnika = slider.getValue();
 				tezavnost_racunalnika = slider.getValue();
 				platno.igra.tezavnost_racunalnika = tezavnost_racunalnika;
 			}
+		}
+		
+		else if (objekt == navodila_igre) {
+			
+			JComponent[] polja = {  
+					
+					new JLabel("                                                            NAVODILA GO"),
+					new JLabel("S prvo potezo prične igralec s črnimi kamenčki in nato si igralca poteze izmenjujeta."),
+					new JLabel("Cilj igre je zavzeti čim večjo površino igralne plošče. Prazno presečišče pripada nekemu"),
+					new JLabel("igralcu če vse možne poti po praznih presečiščih dosežejo le kamenčke tega istega igralca."),
+					new JLabel("Vsako tako presečišče igralcu prinese eno točko, prav tako pa mu točke prinesejo zavzeti"),
+					new JLabel("nasprotnikovi kamenčki, kar je možno doseči tako, da grupi nasprotnikovih kamenčkov"),
+					new JLabel("zapremo vsa možna polja okoli njih in jim tako preprečimo kakršno koli nadaljno širitev."),
+					new JLabel("V temu primeru so nasprotnikovi kamenčki izbrisani iz igralnega polja. Igra se konča ob"),
+					new JLabel("predaji, ali ko oba igralca zaporedoma preskočita potezo ali pa ob kliku na gumb ovrednoti"),
+					new JLabel("igro. V slednjih dveh primerih se v izračun končnega stanja igralčevih točk doda točka za"),
+					new JLabel("vsak kamenček svoje barve, ki je na igralnem polju."),
+					new JLabel("-------------------------------------------------------------------------------------------------------------------------------"),
+					new JLabel("                                                    NAVODILA CAPTURE GO"),
+					new JLabel("S prvo potezo prične igralec s črnimi kamenčki in nato si igralca poteze izmenjujeta."),
+					new JLabel("Cilj igre je zavzeti eno skupino nasprotnikovih kamenčkov, kar je možno doseči tako,"),
+					new JLabel("da grupi nasprotnikovih kamenčkov zapremo vsa možna polja okoli njih in jim tako preprečimo"),
+					new JLabel("kakršno koli nadaljno širitev. Le tako se igra konča, saj ne dovoljujemo preskakovanje potez.")
+			};
+
+
+			int izbira = JOptionPane.showConfirmDialog(this, polja, "Navodila", JOptionPane.PLAIN_MESSAGE );
+
 		}
 
 		repaint();
